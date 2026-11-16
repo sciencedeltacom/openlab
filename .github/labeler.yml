@@ -1,0 +1,54 @@
+'area: agent':
+  - changed-files:
+      - any-glob-to-any-file:
+          - 'src/lib/agent/**'
+          - 'src/components/agents/**'
+          - 'src/lib/ai/**'
+
+'area: science':
+  - changed-files:
+      - any-glob-to-any-file:
+          - 'src/lib/science/**'
+          - 'src/components/stats/**'
+          - 'src/components/experiments/**'
+          - 'src/components/literature/**'
+
+'area: ui':
+  - changed-files:
+      - any-glob-to-any-file:
+          - 'src/components/**'
+          - 'src/theme/**'
+          - 'src/styles.css'
+
+'area: cli':
+  - changed-files:
+      - any-glob-to-any-file:
+          - 'cli/**'
+
+'area: storage':
+  - changed-files:
+      - any-glob-to-any-file:
+          - 'src/lib/db/**'
+          - 'drizzle/**'
+          - 'src-tauri/src/commands/db.rs'
+
+'area: release':
+  - changed-files:
+      - any-glob-to-any-file:
+          - '.github/workflows/**'
+          - 'src-tauri/tauri.conf.json'
+          - 'RELEASING.md'
+          - 'scripts/build-resources.ts'
+
+documentation:
+  - changed-files:
+      - any-glob-to-any-file:
+          - '**/*.md'
+
+dependencies:
+  - changed-files:
+      - any-glob-to-any-file:
+          - 'bun.lock'
+          - 'package.json'
+          - 'src-tauri/Cargo.lock'
+          - 'src-tauri/Cargo.toml'

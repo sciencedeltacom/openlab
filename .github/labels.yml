@@ -1,0 +1,57 @@
+- name: bug
+  color: d73a4a
+  description: Something is broken or does not match the documentation
+- name: enhancement
+  color: a2eeef
+  description: A new capability or a change to the workbench
+- name: documentation
+  color: 0075ca
+  description: The README, the guides and the comments
+- name: security
+  color: b60205
+  description: A security fix or hardening
+- name: dependencies
+  color: 0366d6
+  description: A dependency update
+- name: needs triage
+  color: fbca04
+  description: Waiting for a first look
+- name: good first issue
+  color: 7057ff
+  description: A small, well-scoped change for a newcomer
+- name: help wanted
+  color: 008672
+  description: The maintainers would welcome a hand
+- name: breaking
+  color: 5319e7
+  description: A change that needs a migration
+- name: skip-changelog
+  color: ededed
+  description: Leave this out of the release notes
+- name: 'area: agent'
+  color: 1d76db
+  description: The agent, its tools and its packs
+- name: 'area: science'
+  color: 0e8a16
+  description: Statistics, connectors and procedures
+- name: 'area: ui'
+  color: c5def5
+  description: The interface and the theme
+- name: 'area: cli'
+  color: c2e0c6
+  description: The terminal workbench
+- name: 'area: storage'
+  color: bfd4f2
+  description: SQLite, migrations and the workspace files
+- name: 'area: release'
+  color: f9d0c4
+  description: Builds, signing and the updater
+- name: 'platform: macos'
+  color: '000000'
+  description: macOS only
+- name: 'platform: windows'
+  color: 0078d4
+  description: Windows only
+- name: 'platform: linux'
+  color: fcc624
+  description: Linux only

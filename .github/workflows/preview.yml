@@ -1,43 +1,67 @@
 name: preview
 
-# An unsigned Windows installer for testing, built without the embedded resources.
-#
-# The shipped pipeline (`release.yml`) refuses to build a bundle without `resources/bin` and
-# `resources/mojo`, because those are the embedding server the app ships with. They are large
-# platform binaries and not in git. This workflow exists for the case where someone needs an
-# installer to try the app before those resources are available: it drops them from the
-# bundle, drops the updater artifacts (there is no signing key here), and uploads the plain
-# NSIS installer as a run artifact. It does not publish a release and never will.
-#
-# Expect SmartScreen to warn: the installer is not signed.
+# Unsigned installers for trying the app before a signed release exists. The embedding
+# resources are left out, so the scan engine is absent and the app degrades as designed.
+# This workflow uploads build artifacts and never publishes a release.
 
 on:
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
-  windows:
-    name: Windows installer (unsigned, no embedded resources)
-    runs-on: windows-latest
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: macos-15
+            target: aarch64-apple-darwin
+            bundles: app,dmg
+          - platform: macos-15-intel
+            target: x86_64-apple-darwin
+            bundles: app,dmg
+          - platform: windows-latest
+            target: x86_64-pc-windows-msvc
+            bundles: nsis
+          - platform: ubuntu-22.04
+            target: x86_64-unknown-linux-gnu
+            bundles: deb,appimage
+    runs-on: ${{ matrix.platform }}
+    timeout-minutes: 90
     steps:
       - uses: actions/checkout@v4
+
       - uses: oven-sh/setup-bun@v2
         with:
           bun-version: 1.3.14
+
       - uses: dtolnay/rust-toolchain@stable
         with:
-          targets: x86_64-pc-windows-msvc
+          targets: ${{ matrix.target }}
+
       - uses: Swatinem/rust-cache@v2
         with:
           workspaces: src-tauri
-          # A release build is long; a run that fails at the last crate still saves the rest.
-          cache-on-failure: true
+
       - uses: arduino/setup-protoc@v3
         with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
 
-      # Stronghold's vault links libsodium, and the crate wants either pkg-config or vcpkg.
-      # The runner ships vcpkg; the static-md triplet matches Rust's dynamic CRT.
-      - name: libsodium
+      - name: Linux dependencies
+        if: matrix.platform == 'ubuntu-22.04'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libwebkit2gtk-4.1-dev libayatana-appindicator3-dev \
+            librsvg2-dev libsodium-dev pkg-config
+
+      - name: macOS dependencies
+        if: matrix.platform == 'macos-15' || matrix.platform == 'macos-15-intel'
+        run: brew install libsodium pkg-config
+
+      - name: Windows dependencies
+        if: matrix.platform == 'windows-latest'
         shell: pwsh
         run: |
           vcpkg install libsodium:x64-windows-static-md
@@ -45,22 +69,20 @@ jobs:
           "VCPKG_ROOT=$root" >> $env:GITHUB_ENV
           "VCPKGRS_TRIPLET=x64-windows-static-md" >> $env:GITHUB_ENV
 
-      - run: bun install --frozen-lockfile
-
       - name: Build the installer
         shell: bash
-        # The bundle is large enough that Vite runs out of the default Node heap on this
-        # runner; the build is executed through its shebang, so the flag reaches it.
         env:
           NODE_OPTIONS: --max-old-space-size=6144
         run: |
+          bun install --frozen-lockfile
+          bun run build
           bunx tauri build \
-            --target x86_64-pc-windows-msvc \
-            --bundles nsis \
+            --target ${{ matrix.target }} \
+            --bundles ${{ matrix.bundles }} \
             --config '{"bundle":{"resources":["resources/worker"],"createUpdaterArtifacts":false}}'
 
       - uses: actions/upload-artifact@v4
         with:
-          name: openlab-windows-preview
+          name: openlab-preview-${{ matrix.target }}
           if-no-files-found: error
-          path: src-tauri/target/x86_64-pc-windows-msvc/release/bundle/nsis/*.exe
+          path: src-tauri/target/${{ matrix.target }}/release/bundle/**

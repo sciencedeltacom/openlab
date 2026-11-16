@@ -1,0 +1,62 @@
+name: Bug report
+description: Something is broken or does not match the documentation.
+title: '[bug] '
+labels: ['bug', 'needs triage']
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Do not put secrets, API keys, tokens or private research data in this issue.
+        For a security problem, use the Security tab instead.
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      description: The version shown in the app or by `openlab --version`.
+      placeholder: 0.1.0
+    validations:
+      required: true
+  - type: dropdown
+    id: platform
+    attributes:
+      label: Platform
+      options:
+        - macOS (Apple silicon)
+        - macOS (Intel)
+        - Windows
+        - Linux
+        - CLI only
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Open ...
+        2. Click ...
+        3. See ...
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What you expected
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: What happened
+      description: Include the exact message and, when useful, the local log from Settings, Diagnostics.
+    validations:
+      required: true
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Before submitting
+      options:
+        - label: I searched existing issues for the same problem.
+          required: true
+        - label: This report contains no secrets or private data.
+          required: true
