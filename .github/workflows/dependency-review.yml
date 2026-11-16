@@ -10,6 +10,9 @@ permissions:
 jobs:
   review:
     name: Review dependency changes
+    # The dependency graph and dependency review need GitHub Advanced Security on a private
+    # repository. They run as soon as the repository is public.
+    if: ${{ !github.event.repository.private }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

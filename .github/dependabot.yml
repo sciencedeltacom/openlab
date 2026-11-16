@@ -9,6 +9,9 @@ updates:
       frontend-minor:
         patterns: ['*']
         update-types: ['minor', 'patch']
+    ignore:
+      - dependency-name: '*'
+        update-types: ['version-update:semver-major']
   - package-ecosystem: cargo
     directory: /src-tauri
     schedule:
@@ -18,6 +21,9 @@ updates:
       rust-minor:
         patterns: ['*']
         update-types: ['minor', 'patch']
+    ignore:
+      - dependency-name: '*'
+        update-types: ['version-update:semver-major']
   - package-ecosystem: github-actions
     directory: /
     schedule:
