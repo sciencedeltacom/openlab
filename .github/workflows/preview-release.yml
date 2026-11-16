@@ -43,7 +43,7 @@ jobs:
             cp -R "$app" "$stage/openlab.app"
             codesign --force --deep --sign - "$stage/openlab.app"
             ln -s /Applications "$stage/Applications"
-            cat > "$stage/Read me.txt" <<'TXT'
+            cat > "$stage/README.txt" <<'TXT'
           Drag openlab to Applications.
 
           The first time you open it, right-click openlab and choose Open. macOS asks once
