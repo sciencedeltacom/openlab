@@ -35,11 +35,25 @@ jobs:
             codesign --force --deep --sign - "$app"
             root="$(dirname "$(dirname "$app")")"
             dmg="$(find "$root/dmg" -maxdepth 1 -name '*.dmg' | head -1)"
-            if [ -n "$dmg" ]; then
-              rm -f "$dmg"
-              hdiutil create -volname openlab -srcfolder "$app" -ov -format UDZO "$dmg" >/dev/null
-              echo "rebuilt $dmg"
-            fi
+            [ -n "$dmg" ] || continue
+
+            # A staging folder, not the app alone: the DMG needs the Applications
+            # shortcut beside the app, or there is nothing to drag it onto.
+            stage="$(mktemp -d)"
+            cp -R "$app" "$stage/openlab.app"
+            codesign --force --deep --sign - "$stage/openlab.app"
+            ln -s /Applications "$stage/Applications"
+            cat > "$stage/Read me.txt" <<'TXT'
+          Drag openlab to Applications.
+
+          The first time you open it, right-click openlab and choose Open. macOS asks once
+          because this preview is signed ad hoc, not notarised.
+          TXT
+
+            rm -f "$dmg"
+            hdiutil create -volname openlab -srcfolder "$stage" -ov -format UDZO "$dmg" >/dev/null
+            rm -rf "$stage"
+            echo "rebuilt $dmg"
           done
 
       - name: List the installers
