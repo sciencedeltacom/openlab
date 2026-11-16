@@ -124,7 +124,7 @@ test('a notebook reads, edits and declares its kernel', async ({ page }) => {
   // ── Editing a cell writes the source back, and leaves the outputs alone ──────────────────
   const firstCell = page.locator('.cm-content').first();
   await firstCell.click();
-  await page.keyboard.press('Meta+A');
+  await page.keyboard.press('ControlOrMeta+A');
   await page.keyboard.type('print("edited")');
   await page.getByRole('button', { name: 'Save', exact: true }).click();
 
