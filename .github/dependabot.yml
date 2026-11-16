@@ -1,17 +1,7 @@
 version: 2
 updates:
-  - package-ecosystem: npm
-    directory: /
-    schedule:
-      interval: weekly
-    open-pull-requests-limit: 5
-    groups:
-      frontend-minor:
-        patterns: ['*']
-        update-types: ['minor', 'patch']
-    ignore:
-      - dependency-name: '*'
-        update-types: ['version-update:semver-major']
+  # JavaScript dependencies are managed with Bun. Dependabot cannot update bun.lock,
+  # so the alerts still cover them and `bun update` is the update path.
   - package-ecosystem: cargo
     directory: /src-tauri
     schedule:
