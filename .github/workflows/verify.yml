@@ -58,6 +58,10 @@ jobs:
         run: |
           git config --global user.name "openlab CI"
           git config --global user.email "ci@openlab.dev"
+      # tauri-build checks that every bundled resource path exists. The binaries are
+      # gitignored and only a release needs them, so the checks run against empty dirs.
+      - name: Resource placeholders
+        run: mkdir -p src-tauri/resources/bin src-tauri/resources/mojo
       - uses: dtolnay/rust-toolchain@stable
       - uses: arduino/setup-protoc@v3
         with:
