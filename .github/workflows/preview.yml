@@ -1,0 +1,66 @@
+name: preview
+
+# An unsigned Windows installer for testing, built without the embedded resources.
+#
+# The shipped pipeline (`release.yml`) refuses to build a bundle without `resources/bin` and
+# `resources/mojo`, because those are the embedding server the app ships with. They are large
+# platform binaries and not in git. This workflow exists for the case where someone needs an
+# installer to try the app before those resources are available: it drops them from the
+# bundle, drops the updater artifacts (there is no signing key here), and uploads the plain
+# NSIS installer as a run artifact. It does not publish a release and never will.
+#
+# Expect SmartScreen to warn: the installer is not signed.
+
+on:
+  workflow_dispatch:
+
+jobs:
+  windows:
+    name: Windows installer (unsigned, no embedded resources)
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.3.14
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: x86_64-pc-windows-msvc
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: src-tauri
+          # A release build is long; a run that fails at the last crate still saves the rest.
+          cache-on-failure: true
+      - uses: arduino/setup-protoc@v3
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+
+      # Stronghold's vault links libsodium, and the crate wants either pkg-config or vcpkg.
+      # The runner ships vcpkg; the static-md triplet matches Rust's dynamic CRT.
+      - name: libsodium
+        shell: pwsh
+        run: |
+          vcpkg install libsodium:x64-windows-static-md
+          $root = $env:VCPKG_INSTALLATION_ROOT
+          "VCPKG_ROOT=$root" >> $env:GITHUB_ENV
+          "VCPKGRS_TRIPLET=x64-windows-static-md" >> $env:GITHUB_ENV
+
+      - run: bun install --frozen-lockfile
+
+      - name: Build the installer
+        shell: bash
+        # The bundle is large enough that Vite runs out of the default Node heap on this
+        # runner; the build is executed through its shebang, so the flag reaches it.
+        env:
+          NODE_OPTIONS: --max-old-space-size=6144
+        run: |
+          bunx tauri build \
+            --target x86_64-pc-windows-msvc \
+            --bundles nsis \
+            --config '{"bundle":{"resources":["resources/worker"],"createUpdaterArtifacts":false}}'
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: openlab-windows-preview
+          if-no-files-found: error
+          path: src-tauri/target/x86_64-pc-windows-msvc/release/bundle/nsis/*.exe

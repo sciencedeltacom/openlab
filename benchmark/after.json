@@ -1,0 +1,46 @@
+{
+  "label": "after",
+  "at": "2026-10-15T17:19:24.076Z",
+  "rows": 4000,
+  "rust": {
+    "rows": 4000,
+    "written": 4000,
+    "sync_ms": 944.3,
+    "rss_before_mb": 29.6,
+    "rss_after_mb": 61.2
+  },
+  "rustLegacy": {
+    "rows": 4000,
+    "written": 4000,
+    "sync_ms": 907.9,
+    "rss_before_mb": 29.6,
+    "rss_after_mb": 226.3
+  },
+  "python": {
+    "rows": 4000,
+    "timings": {
+      "bm25_ms": 208.08,
+      "hydrate_ms": 6.89,
+      "search_ms": 167.24,
+      "vector_ms": 310.18
+    },
+    "peak_rss_mb": 47.8,
+    "hits": 1,
+    "searched": 4000,
+    "nearest": 10
+  },
+  "frontend": {
+    "files": 74,
+    "moduleLet": 8,
+    "listenerSets": 3,
+    "moduleMaps": 3,
+    "externalStores": 4,
+    "storeFiles": 5,
+    "lruAtCap": 100,
+    "transcriptKept": 2000,
+    "transcriptWindow": 2000,
+    "scopedHeld": 1000,
+    "scopedAfterDispose": 0,
+    "runsKept": 50
+  }
+}

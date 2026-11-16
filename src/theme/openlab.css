@@ -1,0 +1,292 @@
+/* ==========================================================================
+   openlab theme — ScienceDelta design language mapped onto HeroUI v3 tokens
+
+   Declared unlayered on purpose. HeroUI ships its defaults inside `@layer base`,
+   and unlayered CSS always wins over layered CSS, so these values are the single
+   source of truth while Tailwind utilities can still override them per element.
+
+   Palette source: DESIGN_GUIDE.md §3 (paper white #FAF9F6, ScienceBlue #1E5DB3).
+   ========================================================================== */
+
+/* `:root` is the light theme, and the attribute is how a single element can be put in it —
+   the same way `data-theme='openlab-dark'` puts one in the dark theme. */
+:root,
+[data-theme='openlab'] {
+  color-scheme: light;
+
+  --white: oklch(100% 0 0);
+  --snow: oklch(0.9911 0 0);
+  --eclipse: oklch(0.2103 0.0059 285.89);
+
+  /* Layout primitives */
+  --spacing: 0.25rem;
+  --border-width: 1px;
+  --field-border-width: 1px;
+  --disabled-opacity: 0.5;
+  --ring-offset-width: 2px;
+  --cursor-interactive: pointer;
+  --cursor-disabled: not-allowed;
+
+  /* Radius ladder §5 */
+  --radius: 0.5rem;
+  --field-radius: calc(var(--radius) * 1.5);
+
+  /*
+   * Tone ladder, not a line ladder.
+   *
+   * Structure is carried by three background steps — canvas, panel, island — so the
+   * interface reads as surfaces floating on a page rather than boxes drawn with borders.
+   * The reference design has no visible hairlines anywhere, and this is how it does it.
+   */
+  --background: #f4f3f0;
+  --foreground: #3f3f3e;
+
+  --surface: #faf9f6;
+  --surface-foreground: #3f3f3e;
+  --surface-secondary: #efeeea;
+  --surface-tertiary: #e6e5e0;
+
+  --overlay: #ffffff;
+  --overlay-foreground: #3f3f3e;
+
+  /* HeroUI puts muted at oklch(0.55) in light; ours sat a stop too pale. */
+  --muted: #6f6e6b;
+  --n: #00ffff; /* PROBE n */
+  --n-foreground: #ff00ff; /* PROBE n-foreground */
+  --scrollbar-thumb: color-mix(in oklch, var(--foreground) 14%, transparent);
+  --scrollbar-track: transparent;
+  --scrollbar-gutter: auto;
+  --scrollbar-width: thin;
+  --scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+
+  --default: #efeeea;
+  --default-foreground: #3f3f3e;
+
+  /* ScienceBlue */
+  --accent: #1e5db3;
+  --accent-foreground: #ffffff;
+  --accent-secondary: #0b3c78;
+
+  /* Fields */
+  --field-background: #ffffff;
+  --field-foreground: #3f3f3e;
+  --field-placeholder: #a3a2a0;
+  --field-border: transparent;
+
+  /* Status */
+  --success: #2fbf8f;
+  --success-foreground: #ffffff;
+  --warning: #f2a93b;
+  --warning-foreground: #4b4b4a;
+  --danger: #e5534b;
+  --danger-foreground: #ffffff;
+
+  --segment: #ffffff;
+  --segment-foreground: #4b4b4a;
+
+  /* Near-zero by design: the theme leans on tone, so a hairline is the exception. */
+  --border: color-mix(in oklch, #3f3f3e 8%, transparent);
+  --separator: color-mix(in oklch, #3f3f3e 7%, transparent);
+  --focus: #006fee;
+  --link: #1e5db3;
+
+  /* Code syntax — quiet, so a block reads as a block and not as a colour test. */
+  --syntax-comment: #8a8a86;
+  --syntax-keyword: #a3308f;
+  --syntax-string: #1f7a4d;
+  --syntax-number: #b25a1b;
+  --syntax-function: #1e5db3;
+  --syntax-type: #0b6b6b;
+  --syntax-variable: #3f3f3e;
+  --syntax-operator: #6f6e6b;
+  --syntax-property: #8a5a00;
+
+  /* A code block is a white card on a grey wrapper; the pair needs contrast in both themes. */
+  --code-wrapper: #efeeea;
+  --code-card: #ffffff;
+
+  /* Research phases §3.3 */
+  --phase-writing-bg: #ebf3fc;
+  --phase-writing-fg: #1e5db3;
+  --phase-writing-border: #bccee8;
+  --phase-analysis-bg: #fef7ea;
+  --phase-analysis-fg: #b47818;
+  --phase-analysis-border: #fad69b;
+  --phase-review-bg: #fff4ec;
+  --phase-review-fg: #c25e14;
+  --phase-review-border: #fbc8a3;
+  --phase-published-bg: #eaf9f3;
+  --phase-published-fg: #1f8563;
+  --phase-published-border: #9de2cb;
+
+  --backdrop: rgba(0, 0, 0, 0.42);
+
+  /* Elevation — restrained per §5 */
+  --surface-shadow: 0 1px 3px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.03);
+  --overlay-shadow: 0 8px 24px rgba(0, 0, 0, 0.08), 0 4px 16px rgba(24, 24, 27, 0.05);
+  /*
+   * The island floats over the page, so it gets a touch more lift than a card — but the
+   * theme leans on tone, not hairlines, so there is no ring and no black edge. The shadow is
+   * the theme's own ink (#3f3f3e), spread wide and low so it diffuses instead of drawing a
+   * line, and biased left because the panel sits against the window's right edge.
+   */
+  --island-shadow:
+    0 1px 3px rgba(63, 63, 62, 0.05), -10px 12px 32px rgba(63, 63, 62, 0.09),
+    -22px 28px 64px rgba(63, 63, 62, 0.1);
+  --field-shadow: 0 0 0 0 transparent;
+
+  /* Motion §8 */
+  --ease-signature: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-micro: cubic-bezier(0.4, 0, 0.2, 1);
+
+  --tooltip-delay: 600ms;
+  --tooltip-close-delay: 120ms;
+}
+
+.dark,
+[data-theme='openlab-dark'],
+[data-theme='dark'] {
+  color-scheme: dark;
+
+  /*
+   * Neutrals are HeroUI's own dark ramp, copied rather than invented. A hand-mixed
+   * near-black canvas reads as flat and makes every surface boundary invisible; the
+   * library's ramp is layered and already tuned against its components.
+   */
+  --background: oklch(10.5% 0.004 286);
+  --foreground: oklch(0.97 0 0);
+
+  --surface: oklch(15% 0.004 286);
+  --surface-foreground: var(--foreground);
+  --surface-secondary: oklch(19% 0.004 286);
+  --surface-tertiary: oklch(23% 0.004 286);
+
+  --overlay: oklch(19% 0.004 286);
+  --overlay-foreground: var(--foreground);
+
+  --muted: oklch(72% 0.012 286);
+
+  --default: oklch(21% 0.004 286);
+  --default-foreground: var(--foreground);
+
+  /* ScienceBlue, one step up the ramp so it stays legible on a dark canvas. */
+  --accent: #4579c0;
+  --accent-foreground: #ffffff;
+  --accent-secondary: #0b3c78;
+
+  /*
+   * A step below `--default`, the way HeroUI's own dark theme has it. When these two are the
+   * same value — as they were — `variant="primary"` and `variant="secondary"` render
+   * identically and the choice stops meaning anything.
+   */
+  --field-background: oklch(17% 0.004 286);
+  --field-foreground: var(--foreground);
+  --field-placeholder: oklch(55% 0.01 286);
+  --field-border: transparent;
+
+  --success: #2fbf8f;
+  --success-foreground: oklch(12% 0.005 285.823);
+  --warning: #f2a93b;
+  --warning-foreground: oklch(12% 0.005 285.823);
+  --danger: #e5534b;
+  --danger-foreground: #ffffff;
+
+  --segment: oklch(0.257 0.0037 286.14);
+  --segment-foreground: var(--foreground);
+
+  --border: color-mix(in oklch, oklch(0.75 0.004 286) 9%, transparent);
+  --separator: color-mix(in oklch, oklch(0.75 0.004 286) 8%, transparent);
+  --link: #6d96ce;
+
+  /* Code syntax — the light ramp, lifted one step to hold on the dark canvas. */
+  --syntax-comment: #7d7d7a;
+  --syntax-keyword: #d98ac8;
+  --syntax-string: #8fd6a8;
+  --syntax-number: #e0a06a;
+  --syntax-function: #7fb0ff;
+  --syntax-type: #7fd0cf;
+  --syntax-variable: var(--foreground);
+  --syntax-operator: #b0b0ad;
+  --syntax-property: #e6c37a;
+
+  --code-wrapper: oklch(16% 0.004 286);
+  --code-card: oklch(22% 0.004 286);
+
+  --backdrop: rgba(0, 0, 0, 0.6);
+
+  --surface-shadow: 0 1px 2px rgba(0, 0, 0, 0.35), 0 4px 16px rgba(0, 0, 0, 0.28);
+  --overlay-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+  --island-shadow:
+    0 1px 3px rgba(0, 0, 0, 0.35), -10px 12px 32px rgba(0, 0, 0, 0.4),
+    -22px 28px 64px rgba(0, 0, 0, 0.4);
+  --field-shadow: 0 0 0 0 transparent;
+}
+
+/* Bridge the semantic variables into Tailwind's colour scale so utilities such as
+   `bg-surface` / `text-muted` / `border-separator` exist. */
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+
+  --color-surface: var(--surface);
+  --color-surface-foreground: var(--surface-foreground);
+  --color-surface-secondary: var(--surface-secondary);
+  --color-code-wrapper: var(--code-wrapper);
+  --color-code-card: var(--code-card);
+  --color-surface-tertiary: var(--surface-tertiary);
+
+  --color-overlay: var(--overlay);
+  --color-overlay-foreground: var(--overlay-foreground);
+
+  --color-default: var(--default);
+  --color-default-foreground: var(--default-foreground);
+
+  --color-muted: var(--muted);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent-secondary: var(--accent-secondary);
+
+  /* HeroUI derives a soft wash and a soft foreground per intent. Naming them here means a
+     tinted chip is `bg-accent-soft text-accent-soft-foreground` rather than an opacity
+     someone picked. */
+  --color-accent-soft: color-mix(in oklab, var(--accent) 15%, transparent);
+  --color-accent-soft-foreground: var(--accent);
+  --color-success-soft: color-mix(in oklab, var(--success) 15%, transparent);
+  --color-success-soft-foreground: var(--success);
+  --color-warning-soft: color-mix(in oklab, var(--warning) 15%, transparent);
+  --color-warning-soft-foreground: var(--warning);
+  --color-danger-soft: color-mix(in oklab, var(--danger) 15%, transparent);
+  --color-danger-soft-foreground: var(--danger);
+  --color-default-hover: color-mix(in oklab, var(--default) 96%, var(--default-foreground) 4%);
+
+  --color-field: var(--field-background);
+  --color-field-foreground: var(--field-foreground);
+  --color-field-placeholder: var(--field-placeholder);
+  --color-field-border: var(--field-border);
+
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
+  --color-danger: var(--danger);
+  --color-danger-foreground: var(--danger-foreground);
+
+  --color-border: var(--border);
+  --color-separator: var(--separator);
+  --color-focus: var(--focus);
+  --color-link: var(--link);
+
+  --font-sans: 'Funnel Display Variable', 'Funnel Display', system-ui, -apple-system, sans-serif;
+  --font-serif: 'Libre Baskerville', Georgia, serif;
+  /*
+   * One typeface for the interface.
+   *
+   * Pointed at the sans stack rather than deleted: HeroUI's own typography carries a mono
+   * slot, and a missing variable would fall back to whatever monospace the machine has —
+   * which is the thing being removed. Numbers that need to line up use `tabular-nums`,
+   * which is a figure style, not a second family.
+   */
+  --font-mono: var(--font-sans);
+
+  --ease-signature: cubic-bezier(0.22, 1, 0.36, 1);
+}

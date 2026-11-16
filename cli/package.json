@@ -1,0 +1,152 @@
+{
+  "name": "openlab-cli",
+  "version": "0.1.0",
+  "private": true,
+  "description": "openlab \u2014 the research workbench, at the terminal",
+  "license": "MIT",
+  "type": "module",
+  "bin": {
+    "openlab": "./bin/run.js"
+  },
+  "dependencies": {
+    "@oclif/core": "^5.1.8",
+    "@oclif/plugin-autocomplete": "^4.0.5",
+    "@clack/prompts": "^1.8.1",
+    "ora": "^9.4.1",
+    "picocolors": "^1.1.1"
+  },
+  "oclif": {
+    "bin": "openlab",
+    "dirname": "openlab",
+    "commands": "./src/commands",
+    "topicSeparator": " ",
+    "plugins": [
+      "@oclif/plugin-autocomplete"
+    ],
+    "topics": {
+      "workspace": {
+        "description": "The folder a lab works in: its manifest, its structure, its wiki"
+      },
+      "files": {
+        "description": "Read and write the workspace's files"
+      },
+      "git": {
+        "description": "Version control through the user's own git"
+      },
+      "search": {
+        "description": "Find files and lines in the workspace"
+      },
+      "exec": {
+        "description": "Run a command in the workspace, or fetch a URL"
+      },
+      "db": {
+        "description": "The workbench's SQLite store"
+      },
+      "secrets": {
+        "description": "Credential vault"
+      },
+      "session": {
+        "description": "Sessions: the experiments a workspace has run"
+      },
+      "chat": {
+        "description": "Talk to a model with the workspace in context"
+      },
+      "research": {
+        "description": "The tracker: tasks, waves, intake, notes"
+      },
+      "plan": {
+        "description": "The plan as files under .openlab/plan"
+      },
+      "wiki": {
+        "description": "The OpenWiki the agent reads"
+      },
+      "sources": {
+        "description": "The databases and sources the lab draws from"
+      },
+      "databases": {
+        "description": "Catalogue databases and their operations"
+      },
+      "analyze": {
+        "description": "Statistics, experiments and figures"
+      },
+      "compute": {
+        "description": "Targets, jobs and autoresearch"
+      },
+      "literature": {
+        "description": "Systematic reviews and their papers"
+      },
+      "packs": {
+        "description": "Domain packs and what they bring"
+      },
+      "tools": {
+        "description": "Tools, connectors, credentials and MCP servers"
+      },
+      "skills": {
+        "description": "Science skills and the recipes that use them"
+      },
+      "connections": {
+        "description": "Cloud stores a workspace is linked to"
+      },
+      "providers": {
+        "description": "Model providers"
+      },
+      "models": {
+        "description": "The model catalogue"
+      },
+      "agents": {
+        "description": "Agents, teams and subagents"
+      },
+      "settings": {
+        "description": "The workbench's own settings"
+      },
+      "scan": {
+        "description": "The document scan engine"
+      },
+      "cloud": {
+        "description": "HTTP and object-storage transport"
+      },
+      "research:tasks": {
+        "description": "The tracker's tasks: open, change, finish"
+      },
+      "research:waves": {
+        "description": "The stretches of work a lab plans in"
+      },
+      "research:intake": {
+        "description": "What arrived and still needs a decision"
+      },
+      "analyze:experiments": {
+        "description": "The experiment ledger: hypotheses, trials, outcomes"
+      },
+      "analyze:figures": {
+        "description": "The workspace's figures, as documents under .openlab/figures"
+      },
+      "compute:jobs": {
+        "description": "The job ledger: what ran, where and how it ended"
+      },
+      "compute:targets": {
+        "description": "The machines and services a job can be sent to"
+      },
+      "compute:autoresearch": {
+        "description": "Topics that search databases and write findings"
+      },
+      "tools:catalog": {
+        "description": "What the agent can call, and what each call touches"
+      },
+      "tools:connectors": {
+        "description": "The science connectors and the credential each needs"
+      },
+      "tools:credentials": {
+        "description": "The keys the terminal has, in its own vault"
+      },
+      "tools:custom": {
+        "description": "Tools an extension contributes"
+      },
+      "tools:mcp": {
+        "description": "The MCP servers the packs allow"
+      },
+      "skills:recipes": {
+        "description": "The recipes the packs carry"
+      }
+    }
+  }
+}

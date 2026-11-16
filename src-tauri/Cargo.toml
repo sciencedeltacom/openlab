@@ -1,0 +1,60 @@
+[package]
+name = "openlab"
+version = "0.1.0"
+description = "openlab — the research workbench by ScienceDelta"
+authors = ["ScienceDelta"]
+edition = "2021"
+rust-version = "1.90"
+license = "MIT"
+
+[lib]
+name = "openlab_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = [] }
+tauri-plugin-dialog = "2"
+tauri-plugin-opener = "2"
+# One process per install: two windows writing the same SQLite file is how a store gets
+# corrupted. The second launch focuses the window that already exists.
+tauri-plugin-single-instance = "2"
+# In-app updates: the release pipeline signs a manifest, the app verifies and installs it.
+tauri-plugin-updater = "2"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+# Credentials live in an encrypted Stronghold vault instead of the OS keychain, which prompts on
+# every rebuild of an unsigned dev binary.
+tauri-plugin-stronghold = "2"
+getrandom = "0.2"
+reqwest = { version = "0.12", default-features = false, features = ["json", "stream", "rustls-tls"] }
+tokio = { version = "1", features = ["sync"] }
+futures-util = "0.3"
+regex = "1"
+walkdir = "2"
+glob = "0.3"
+zip = { version = "2", default-features = false, features = ["deflate"] }
+rusqlite = { version = "0.40.2", features = ["bundled"] }
+sha2 = "0.10"
+lancedb = "0.26.2"
+arrow-array = "57.2"
+arrow-schema = "57.2"
+# Compile-time dependency injection for the stateful services, so construction is one place
+# and every service can be asked to release its resources when the app goes idle.
+shaku = "0.6"
+
+[profile.release]
+codegen-units = 1
+lto = true
+opt-level = "s"
+panic = "abort"
+strip = true
+
+# Stronghold's scrypt is unusably slow when left unoptimized; see the plugin's setup notes.
+[profile.dev.package.scrypt]
+opt-level = 3
+
+[dev-dependencies]
+tokio = { version = "1", features = ["macros", "rt-multi-thread", "time"] }

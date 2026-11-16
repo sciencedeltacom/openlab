@@ -1,0 +1,154 @@
+name: release
+
+# Tagged builds. The resources a release embeds (`src-tauri/resources/bin`,
+# `resources/mojo`) are platform binaries and are not in git; they are fetched into
+# `src-tauri/resources/` by the step below and verified before anything is built.
+# See RELEASING.md for how the archives are produced and where they live.
+
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Existing tag to build (for example v0.1.3)
+        required: true
+
+# tauri-action creates the draft release and uploads its assets with this token.
+permissions:
+  contents: write
+
+concurrency:
+  group: release-${{ inputs.tag || github.ref_name }}
+  cancel-in-progress: false
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: macos-15
+            target: aarch64-apple-darwin
+            resources: resources-darwin-arm64.tar.gz
+          - platform: macos-15-intel
+            target: x86_64-apple-darwin
+            resources: resources-darwin-x64.tar.gz
+          - platform: windows-latest
+            target: x86_64-pc-windows-msvc
+            resources: resources-win32-x64.tar.gz
+          - platform: ubuntu-22.04
+            target: x86_64-unknown-linux-gnu
+            resources: resources-linux-x64.tar.gz
+    runs-on: ${{ matrix.platform }}
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.tag || github.ref }}
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.3.14
+
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.target }}
+
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: src-tauri
+
+      # The Rust graph includes a protobuf build step (Lance and DataFusion), so every
+      # runner needs protoc, not only the one that happens to have it.
+      - uses: arduino/setup-protoc@v3
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Linux dependencies
+        if: matrix.platform == 'ubuntu-22.04'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libwebkit2gtk-4.1-dev libayatana-appindicator3-dev \
+            librsvg2-dev libsodium-dev pkg-config
+
+      # Stronghold links libsodium. The macOS runners do not ship it, and the arm64
+      # bundled build does not configure, so use the system install through pkg-config.
+      - name: macOS dependencies
+        if: matrix.platform == 'macos-15' || matrix.platform == 'macos-15-intel'
+        run: brew install libsodium pkg-config
+
+      - name: Windows dependencies
+        if: matrix.platform == 'windows-latest'
+        shell: pwsh
+        run: |
+          vcpkg install libsodium:x64-windows-static-md
+          $root = $env:VCPKG_INSTALLATION_ROOT
+          "VCPKG_ROOT=$root" >> $env:GITHUB_ENV
+          "VCPKGRS_TRIPLET=x64-windows-static-md" >> $env:GITHUB_ENV
+
+      # One archive per target, uploaded once and fetched by every run. The base URL is a
+      # repository variable, so a fork can point at its own archives without a code change.
+      - name: Embedded resources
+        shell: bash
+        env:
+          RESOURCES_BASE: ${{ vars.OPENLAB_RESOURCES_BASE }}
+          RESOURCES_ARCHIVE: ${{ matrix.resources }}
+          TARGET: ${{ matrix.target }}
+        run: |
+          if [ -z "$RESOURCES_BASE" ]; then
+            echo "::error::Set the repository variable OPENLAB_RESOURCES_BASE to the URL that holds the resource archives (RELEASING.md)."
+            exit 1
+          fi
+          base="${RESOURCES_BASE%/}"
+          curl -fsSL "$base/$RESOURCES_ARCHIVE" -o resources.tar.gz
+          curl -fsSL "$base/$RESOURCES_ARCHIVE.sha256" -o resources.sha256
+          expected="$(awk '{print $1}' resources.sha256)"
+          if command -v sha256sum >/dev/null; then
+            actual="$(sha256sum resources.tar.gz | awk '{print $1}')"
+          else
+            actual="$(shasum -a 256 resources.tar.gz | awk '{print $1}')"
+          fi
+          if [ -z "$expected" ] || [ "$expected" != "$actual" ]; then
+            echo "::error::$RESOURCES_ARCHIVE does not match its SHA-256."
+            exit 1
+          fi
+          tar -xzf resources.tar.gz -C src-tauri/resources
+          for path in src-tauri/resources/bin src-tauri/resources/mojo; do
+            if [ ! -d "$path" ] || [ -z "$(ls -A "$path")" ]; then
+              echo "::error::$path is empty for $TARGET. Rebuild the resources (RELEASING.md)."
+              exit 1
+            fi
+          done
+
+      - name: Build the frontend
+        env:
+          # The bundle is large enough that Vite runs out of the default Node heap.
+          NODE_OPTIONS: --max-old-space-size=6144
+        run: |
+          bun install --frozen-lockfile
+          bun run build
+
+      - uses: tauri-apps/tauri-action@v0
+        env:
+          # macOS
+          APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
+          APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+          APPLE_SIGNING_IDENTITY: ${{ secrets.APPLE_SIGNING_IDENTITY }}
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          # Windows Authenticode, so SmartScreen trusts the installer.
+          WINDOWS_CERTIFICATE: ${{ secrets.WINDOWS_CERTIFICATE }}
+          WINDOWS_CERTIFICATE_PASSWORD: ${{ secrets.WINDOWS_CERTIFICATE_PASSWORD }}
+          # The updater manifest is signed with this key; the app verifies it before running.
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
+        with:
+          tagName: ${{ inputs.tag || github.ref_name }}
+          releaseName: openlab ${{ inputs.tag || github.ref_name }}
+          releaseDraft: true
+          # Produces `latest.json` beside the artifacts, which is the endpoint the app reads.
+          includeUpdaterJson: true
+          # The updater artifacts are signed only here, where the key exists.
+          args: --target ${{ matrix.target }} --config '{"bundle":{"createUpdaterArtifacts":true}}'

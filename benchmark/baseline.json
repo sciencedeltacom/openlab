@@ -1,0 +1,35 @@
+{
+  "label": "baseline",
+  "at": "2026-10-15T15:58:07.236Z",
+  "rows": 4000,
+  "rust": {
+    "rows": 4000,
+    "written": 4000,
+    "sync_ms": 605.7,
+    "rss_before_mb": 29.6,
+    "rss_after_mb": 191.2
+  },
+  "python": {
+    "rows": 4000,
+    "timings": {
+      "bm25_ms": 191.87,
+      "hydrate_ms": 9.24,
+      "search_ms": 290.12,
+      "vector_ms": 351.79
+    },
+    "peak_rss_mb": 159.0,
+    "hits": 1,
+    "searched": 4000,
+    "nearest": 10,
+    "note": "re-measured with the same harness and the same system load as the after run, against the pre-change store/bm25/pipeline"
+  },
+  "frontend": {
+    "files": 66,
+    "moduleLet": 12,
+    "listenerSets": 7,
+    "moduleMaps": 4,
+    "externalStores": 4,
+    "storeFiles": 4,
+    "note": "externalStores counts useSyncExternalStore calls, not mentions"
+  }
+}

@@ -1,0 +1,5 @@
+# Stronghold's secure memory links libsodium. Its bundled build fails to configure on arm64 macOS
+# (it probes x86 SIMD options), so use the system install via pkg-config:
+#   brew install libsodium pkg-config
+[env]
+SODIUM_USE_PKG_CONFIG = "1"

@@ -1,0 +1,1 @@
+ALTER TABLE `syncPairs` ADD `kind` text;

@@ -1,0 +1,16 @@
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "baseUrl": "..",
+    "paths": { "@/*": ["src/*"] },
+    // Bun for the runtime (sqlite, glob, YAML), node for the process and filesystem, and the
+    // DOM because the app modules this reuses reach for `window` behind a `typeof` guard.
+    "types": ["node", "bun-types"],
+    "lib": ["ES2023", "DOM", "DOM.Iterable"],
+    // Every command overrides `static description` and often `flags`; the app's rule would make
+    // each of those carry `override` for no gain.
+    "noImplicitOverride": false,
+    "noEmit": true
+  },
+  "include": ["."]
+}

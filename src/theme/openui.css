@@ -1,0 +1,114 @@
+/* ==========================================================================
+   OpenUI theme bridge
+
+   OpenUI ships its own design tokens (`--openui-*`) and only switches them on
+   `prefers-color-scheme`, so a generated interface drifts from the workbench the moment the
+   OS and the app disagree about light/dark — and it never uses the app's palette.
+
+   These declarations are unlayered, so they win over OpenUI's `@layer openui` defaults
+   (including its media-query dark block). Each token points at an openlab variable, which
+   already flips with the theme, so the generated UI follows light and dark for free. This is
+   the same rule the rest of the app follows: a HeroUI component is themed with variables,
+   never with a one-off colour.
+   ========================================================================== */
+
+:root {
+  /* Surfaces and ink */
+  --openui-background: var(--background);
+  --openui-foreground: var(--surface);
+  --openui-popover-background: var(--overlay);
+  --openui-overlay: var(--backdrop);
+  --openui-inverted-background: var(--foreground);
+
+  --openui-sunk-light: color-mix(in oklab, var(--foreground) 2%, transparent);
+  --openui-sunk: color-mix(in oklab, var(--foreground) 4%, transparent);
+  --openui-sunk-deep: color-mix(in oklab, var(--foreground) 8%, transparent);
+  --openui-elevated-light: color-mix(in oklab, var(--foreground) 4%, transparent);
+  --openui-elevated: color-mix(in oklab, var(--foreground) 6%, transparent);
+  --openui-elevated-strong: color-mix(in oklab, var(--foreground) 12%, transparent);
+  --openui-elevated-intense: color-mix(in oklab, var(--foreground) 24%, transparent);
+
+  --openui-highlight-subtle: var(--surface-secondary);
+  --openui-highlight: var(--surface-tertiary);
+  --openui-highlight-strong: var(--surface-tertiary);
+  --openui-highlight-intense: var(--default);
+
+  --openui-text-neutral-primary: var(--foreground);
+  --openui-text-neutral-secondary: var(--muted);
+  --openui-text-neutral-tertiary: color-mix(in oklab, var(--muted) 65%, transparent);
+  --openui-text-neutral-link: var(--link);
+  --openui-text-white: #ffffff;
+  --openui-text-black: var(--foreground);
+
+  /* Dividers default to the app's whisper-thin hairline */
+  --openui-border-default: var(--border);
+  --openui-border-interactive: var(--border);
+  --openui-border-interactive-emphasis: color-mix(in oklab, var(--accent) 45%, transparent);
+  --openui-border-interactive-selected: var(--accent);
+
+  /* Primary action follows ScienceBlue */
+  --openui-border-accent: var(--accent);
+  --openui-border-accent-emphasis: var(--accent);
+  --openui-interactive-accent-default: var(--accent);
+  --openui-interactive-accent-hover: color-mix(in oklab, var(--accent) 88%, black);
+  --openui-interactive-accent-pressed: color-mix(in oklab, var(--accent) 78%, black);
+  --openui-interactive-accent-disabled: color-mix(in oklab, var(--accent) 40%, transparent);
+  --openui-text-accent-primary: var(--accent-foreground);
+  --openui-text-accent-secondary: var(--accent);
+  --openui-text-accent-tertiary: color-mix(in oklab, var(--accent) 70%, transparent);
+
+  /* Destructive */
+  --openui-interactive-destructive-default: color-mix(in oklab, var(--danger) 14%, transparent);
+  --openui-interactive-destructive-hover: color-mix(in oklab, var(--danger) 20%, transparent);
+  --openui-interactive-destructive-accent-default: var(--danger);
+  --openui-interactive-destructive-accent-hover: color-mix(in oklab, var(--danger) 88%, black);
+  --openui-interactive-destructive-accent-pressed: color-mix(in oklab, var(--danger) 78%, black);
+  --openui-border-danger: var(--danger);
+  --openui-border-danger-emphasis: var(--danger);
+  --openui-text-danger-primary: var(--danger);
+  --openui-text-danger-secondary: color-mix(in oklab, var(--danger) 80%, transparent);
+  --openui-danger-background: color-mix(in oklab, var(--danger) 15%, transparent);
+
+  /* Intents */
+  --openui-border-success: var(--success);
+  --openui-border-success-emphasis: var(--success);
+  --openui-text-success-primary: var(--success);
+  --openui-success-background: color-mix(in oklab, var(--success) 15%, transparent);
+
+  --openui-border-alert: var(--warning);
+  --openui-border-alert-emphasis: var(--warning);
+  --openui-text-alert-primary: var(--warning);
+  --openui-alert-background: color-mix(in oklab, var(--warning) 15%, transparent);
+
+  --openui-border-info: var(--accent);
+  --openui-border-info-emphasis: var(--accent);
+  --openui-text-info-primary: var(--accent);
+  --openui-info-background: color-mix(in oklab, var(--accent) 12%, transparent);
+
+  /* The radius ladder, expressed in the app's radius so corners agree */
+  --openui-radius-2xs: calc(var(--radius) * 0.5);
+  --openui-radius-xs: calc(var(--radius) * 0.625);
+  --openui-radius-s: calc(var(--radius) * 0.75);
+  --openui-radius-m: var(--radius);
+  --openui-radius-l: calc(var(--radius) * 1.25);
+  --openui-radius-xl: var(--field-radius);
+  --openui-radius-2xl: calc(var(--radius) * 1.5);
+  --openui-radius-3xl: calc(var(--radius) * 1.75);
+
+  /* One typeface, the app's */
+  --openui-font-body: var(--font-sans);
+  --openui-font-heading: var(--font-sans);
+  --openui-font-label: var(--font-sans);
+  --openui-font-numbers: var(--font-sans);
+  --openui-font-code: var(--font-mono);
+}
+
+/*
+ * OpenUI's text roles are `font:` shorthands that hardwire a family, so pointing the family
+ * variables at the app's stack is not enough. The app runs on a single typeface by design
+ * (`--font-mono` is itself the sans stack), so the whole generated subtree inherits it.
+ */
+.openlab-openui,
+.openlab-openui * {
+  font-family: var(--font-sans);
+}

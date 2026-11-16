@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en" data-theme="openlab">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>openlab</title>
+
+    <style>
+      /* Paint the canvas before the bundle loads so there is no white flash.
+         Colours come from the theme variables rather than the OS preference: a popover
+         inherits its text colour from `body`, so a body that flips to white under
+         `prefers-color-scheme: dark` produces white text on a light popover. */
+      html,
+      body,
+      #root {
+        height: 100%;
+        margin: 0;
+      }
+      body {
+        background: var(--background, #faf9f6);
+        color: var(--foreground, #4b4b4a);
+        font-family: 'Funnel Display Variable', 'Funnel Display', -apple-system, BlinkMacSystemFont, sans-serif;
+        -webkit-font-smoothing: antialiased;
+        overflow: hidden;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

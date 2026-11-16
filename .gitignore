@@ -1,0 +1,50 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+*.tsbuildinfo
+
+# Playwright
+test-results/
+playwright-report/
+blob-report/
+
+# Rust
+src-tauri/target/
+
+# Tauri generated
+src-tauri/gen/
+
+# Editor and OS
+.DS_Store
+.vscode/*
+!.vscode/extensions.json
+.idea/
+
+# Logs
+*.log
+
+# Local environment
+.env
+.env.local
+
+# Python scratch used by the verification scripts
+__pycache__/
+.venv/
+
+# The bundled Python environment (python-build-standalone + pip packages)
+src-tauri/resources/python/
+# A locally compiled Mojo hot path, and the runtime libraries it links against
+src-tauri/resources/mojo/*.mojopkg
+src-tauri/resources/bin/
+src-tauri/resources/mojo/*.so
+src-tauri/resources/mojo/*.dylib
+
+# Benchmark output (the inputs and fixtures stay tracked)
+benchmark/now.json
+benchmark/pages.json
+
+# Resource archives produced by `bun run resources:build`
+resources-*.tar.gz
+resources-*.tar.gz.sha256
