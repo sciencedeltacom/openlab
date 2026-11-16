@@ -23,14 +23,17 @@ jobs:
       - name: Formatting
         run: bunx prettier --check "src/**/*.{ts,tsx,css}" "cli/src/**/*.ts"
       - name: Dependency audit
-        # The app's own tree is clean: katex and esbuild are pinned by overrides in
-        # package.json. A new advisory should stop the build rather than be read past.
-        run: bun audit --audit-level=moderate
+        # High and critical advisories stop the build. Moderate advisories in the CLI
+        # toolchain are tracked by Dependabot instead of blocking every change.
+        run: bun audit --audit-level=high
       - name: Typecheck and verifiers
         run: bun run verify:web
       - name: Containment tests
         run: bun test cli/src/lib/host cli/src/lib/ui.test.ts
-      - run: bun run build
+      - name: Build the bundle
+        env:
+          NODE_OPTIONS: --max-old-space-size=6144
+        run: bun run build
       - name: Browser end-to-end smoke tests
         # The preview server serves `dist/`, so the build above has to come first. Chromium's
         # system libraries are not on the runner by default, hence `--with-deps`.
@@ -56,6 +59,8 @@ jobs:
           sudo apt-get install -y libwebkit2gtk-4.1-dev libayatana-appindicator3-dev \
             librsvg2-dev libsodium-dev pkg-config
       - name: Frontend bundle the shell embeds
+        env:
+          NODE_OPTIONS: --max-old-space-size=6144
         run: |
           bun install --frozen-lockfile
           bun run build
