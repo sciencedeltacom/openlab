@@ -73,6 +73,10 @@ jobs:
         shell: bash
         env:
           NODE_OPTIONS: --max-old-space-size=6144
+          # Without an identity Tauri leaves the linker's ad-hoc signature on the binary,
+          # which macOS reads as a damaged bundle. `-` signs the bundle ad hoc so it opens
+          # with the standard unidentified-developer prompt instead.
+          APPLE_SIGNING_IDENTITY: '-'
         run: |
           bun install --frozen-lockfile
           bun run build

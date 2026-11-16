@@ -1,8 +1,9 @@
 name: preview release
 
-# Publish a finished preview build as a draft release. The artifacts are unsigned and carry
-# no embedding resources, so the release body says so. The signed release stays in
-# release.yml and needs the signing identities and per-target resources.
+# Publish a finished preview build as a draft release. The artifacts are unsigned (the macOS
+# apps are re-signed ad hoc here) and carry no embedding resources, so the release body says
+# so. The signed release stays in release.yml and needs the signing identities and
+# per-target resources.
 
 on:
   workflow_dispatch:
@@ -17,7 +18,8 @@ permissions:
 
 jobs:
   publish:
-    runs-on: ubuntu-latest
+    # macOS, because codesign and hdiutil are what fix the downloaded macOS apps.
+    runs-on: macos-15
     steps:
       - uses: actions/download-artifact@v4
         with:
@@ -25,22 +27,39 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           path: artifacts
 
+      - name: Sign the macOS apps and rebuild their disk images
+        run: |
+          set -euo pipefail
+          find artifacts -type d -name "openlab.app" | while read -r app; do
+            echo "signing $app"
+            codesign --force --deep --sign - "$app"
+            root="$(dirname "$(dirname "$app")")"
+            dmg="$(find "$root/dmg" -maxdepth 1 -name '*.dmg' | head -1)"
+            if [ -n "$dmg" ]; then
+              rm -f "$dmg"
+              hdiutil create -volname openlab -srcfolder "$app" -ov -format UDZO "$dmg" >/dev/null
+              echo "rebuilt $dmg"
+            fi
+          done
+
       - name: List the installers
         run: find artifacts -type f | sort
 
       - uses: softprops/action-gh-release@v2
         with:
           tag_name: preview-0.1.0
-          name: openlab 0.1.0 preview (unsigned)
+          name: openlab 0.1.0 preview
           draft: true
           prerelease: true
+          overwrite_files: true
           body: |
-            Unsigned preview builds for macOS, Windows and Linux.
+            Preview builds for macOS, Windows and Linux.
 
-            These installers were built without a platform signing identity and without the
-            optional embedding resources. Gatekeeper and SmartScreen will warn, and the PDF
-            scan engine is not included. Use them to try the workbench; a signed release
-            follows once the certificates and the per-target resource archives are configured.
+            The macOS apps are signed ad hoc, not notarised: macOS will ask you to confirm the
+            first open (right-click, Open), but the bundle is no longer reported as damaged. The
+            Windows and Linux builds are unsigned. The optional embedding resources are not
+            included, so the PDF scan engine is absent. A signed and notarised release follows
+            once the certificates and the per-target resources are configured.
 
             - macOS: Apple silicon and Intel, DMG
             - Windows: x64, NSIS installer
