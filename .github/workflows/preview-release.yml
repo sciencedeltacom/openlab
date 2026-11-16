@@ -1,0 +1,52 @@
+name: preview release
+
+# Publish a finished preview build as a draft release. The artifacts are unsigned and carry
+# no embedding resources, so the release body says so. The signed release stays in
+# release.yml and needs the signing identities and per-target resources.
+
+on:
+  workflow_dispatch:
+    inputs:
+      run_id:
+        description: The preview workflow run to publish
+        required: true
+
+permissions:
+  contents: write
+  actions: read
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          run-id: ${{ inputs.run_id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path: artifacts
+
+      - name: List the installers
+        run: find artifacts -type f | sort
+
+      - uses: softprops/action-gh-release@v2
+        with:
+          tag_name: preview-0.1.0
+          name: openlab 0.1.0 preview (unsigned)
+          draft: true
+          prerelease: true
+          body: |
+            Unsigned preview builds for macOS, Windows and Linux.
+
+            These installers were built without a platform signing identity and without the
+            optional embedding resources. Gatekeeper and SmartScreen will warn, and the PDF
+            scan engine is not included. Use them to try the workbench; a signed release
+            follows once the certificates and the per-target resource archives are configured.
+
+            - macOS: Apple silicon and Intel, DMG
+            - Windows: x64, NSIS installer
+            - Linux: x64, deb and AppImage
+          files: |
+            artifacts/**/*.dmg
+            artifacts/**/*.exe
+            artifacts/**/*.deb
+            artifacts/**/*.AppImage
