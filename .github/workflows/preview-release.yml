@@ -63,9 +63,10 @@ jobs:
 
             - macOS: Apple silicon and Intel, DMG
             - Windows: x64, NSIS installer
-            - Linux: x64, deb and AppImage
+            - Linux: x64, deb, rpm and AppImage
           files: |
             artifacts/**/*.dmg
             artifacts/**/*.exe
             artifacts/**/*.deb
+            artifacts/**/*.rpm
             artifacts/**/*.AppImage
