@@ -50,8 +50,11 @@ jobs:
             cat > "$stage/README.txt" <<'TXT'
           Drag openlab to Applications.
 
-          The first time you open it, right-click openlab and choose Open. macOS asks once
-          because this preview is signed ad hoc, not notarised.
+          First launch: open System Settings > Privacy & Security, scroll to Security,
+          and click Open Anyway next to the openlab message. Or right-click openlab
+          and choose Open.
+
+          This preview is signed ad hoc, not notarised, so macOS asks once.
           TXT
 
             rm -f "$dmg"
@@ -66,22 +69,54 @@ jobs:
       - uses: softprops/action-gh-release@v2
         with:
           tag_name: preview-0.1.0
-          name: openlab 0.1.0 preview
+          name: openlab 0.1.0 Preview
           draft: true
           prerelease: true
           overwrite_files: true
           body: |
-            Preview builds for macOS, Windows and Linux.
+            # openlab 0.1.0 Preview
 
-            The macOS apps are signed ad hoc, not notarised: macOS will ask you to confirm the
-            first open (right-click, Open), but the bundle is no longer reported as damaged. The
-            Windows and Linux builds are unsigned. The optional embedding resources are not
-            included, so the PDF scan engine is absent. A signed and notarised release follows
-            once the certificates and the per-target resources are configured.
+            The first public preview of **openlab**, the research workbench: an agent you can
+            watch, a real workspace, and every result you can reproduce.
 
-            - macOS: Apple silicon and Intel, DMG
-            - Windows: x64, NSIS installer
-            - Linux: x64, deb, rpm and AppImage
+            ## Download
+
+            | Platform | Build |
+            | --- | --- |
+            | macOS (Apple silicon) | `openlab_0.1.0_aarch64.dmg` |
+            | macOS (Intel) | `openlab_0.1.0_x64.dmg` |
+            | Windows (x64) | `openlab_0.1.0_x64-setup.exe` |
+            | Linux (Debian, Ubuntu) | `openlab_0.1.0_amd64.deb` |
+            | Linux (Fedora, RHEL) | `openlab-0.1.0-1.x86_64.rpm` |
+            | Linux (portable) | `openlab_0.1.0_amd64.AppImage` |
+
+            ## macOS: allow the first launch
+
+            These preview builds are signed ad hoc, not notarized, so macOS blocks the first
+            launch. This is expected and happens once.
+
+            1. Open the DMG and drag **openlab** to **Applications**.
+            2. Open **System Settings > Privacy & Security** and scroll to **Security**.
+            3. Next to the message about openlab, click **Open Anyway**.
+            4. Confirm with **Open**.
+
+            Alternatively, right-click **openlab** in Applications and choose **Open**.
+
+            A signed and notarized release will open without this step.
+
+            ## Notes
+
+            - Free and MIT licensed.
+            - The optional PDF scan engine (embedding server) is not included in this preview.
+              The rest of the workbench works.
+            - Windows: SmartScreen may warn. Choose **More info > Run anyway**.
+            - Linux: if the AppImage is not executable, run
+              `chmod +x openlab_0.1.0_amd64.AppImage`.
+            - Report issues at
+              https://github.com/sciencedeltacom/openlab/issues.
+
+            A signed and notarized 0.1.x release follows once the Apple and Windows signing
+            identities are configured.
           files: |
             artifacts/**/*.dmg
             artifacts/**/*.exe
