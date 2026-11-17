@@ -22,9 +22,9 @@ jobs:
     runs-on: macos-15
     steps:
       # The release notes live in the repository, so the job needs a checkout to read them.
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           run-id: ${{ inputs.run_id }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
@@ -75,7 +75,7 @@ jobs:
       - name: List the installers
         run: find artifacts -type f | sort
 
-      - uses: softprops/action-gh-release@v2
+      - uses: softprops/action-gh-release@v3
         with:
           tag_name: preview-0.1.0
           name: openlab 0.1.0 Preview
