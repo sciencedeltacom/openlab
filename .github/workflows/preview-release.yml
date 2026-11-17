@@ -73,53 +73,34 @@ jobs:
           draft: true
           prerelease: true
           overwrite_files: true
-          body: |
-            # openlab 0.1.0 Preview
-
-            The first public preview of **openlab**, the research workbench: an agent you can
-            watch, a real workspace, and every result you can reproduce.
-
-            ## Download
-
-            | Platform | Build |
-            | --- | --- |
-            | macOS (Apple silicon) | `openlab_0.1.0_aarch64.dmg` |
-            | macOS (Intel) | `openlab_0.1.0_x64.dmg` |
-            | Windows (x64) | `openlab_0.1.0_x64-setup.exe` |
-            | Linux (Debian, Ubuntu) | `openlab_0.1.0_amd64.deb` |
-            | Linux (Fedora, RHEL) | `openlab-0.1.0-1.x86_64.rpm` |
-            | Linux (portable) | `openlab_0.1.0_amd64.AppImage` |
-
-            ## macOS: allow the first launch
-
-            These preview builds are signed ad hoc, not notarized, so macOS blocks the first
-            launch. This is expected and happens once.
-
-            1. Open the DMG and drag **openlab** to **Applications**.
-            2. Open **System Settings > Privacy & Security** and scroll to **Security**.
-            3. Next to the message about openlab, click **Open Anyway**.
-            4. Confirm with **Open**.
-
-            Alternatively, right-click **openlab** in Applications and choose **Open**.
-
-            A signed and notarized release will open without this step.
-
-            ## Notes
-
-            - Free and MIT licensed.
-            - The optional PDF scan engine (embedding server) is not included in this preview.
-              The rest of the workbench works.
-            - Windows: SmartScreen may warn. Choose **More info > Run anyway**.
-            - Linux: if the AppImage is not executable, run
-              `chmod +x openlab_0.1.0_amd64.AppImage`.
-            - Report issues at
-              https://github.com/sciencedeltacom/openlab/issues.
-
-            A signed and notarized 0.1.x release follows once the Apple and Windows signing
-            identities are configured.
+          body_path: .github/release-notes/0.1.0-preview.md
           files: |
             artifacts/**/*.dmg
             artifacts/**/*.exe
             artifacts/**/*.deb
             artifacts/**/*.rpm
             artifacts/**/*.AppImage
+
+      # A draft release is not discoverable by tag, so the action above can leave more than
+      # one. Keep the newest, put the notes on it, and remove the older drafts.
+      - name: Keep one draft release and sync its notes
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          jq -Rs '{ name: "openlab 0.1.0 Preview", body: . }' \
+            .github/release-notes/0.1.0-preview.md > /tmp/release.json
+          ids="$(gh api "/repos/${{ github.repository }}/releases" --paginate \
+            --jq '.[] | select(.draft) | .id' | sort -n)"
+          if [ -z "$ids" ]; then
+            echo "no draft release"
+            exit 0
+          fi
+          keep="$(echo "$ids" | tail -n 1)"
+          gh api -X PATCH "/repos/${{ github.repository }}/releases/$keep" \
+            --input /tmp/release.json >/dev/null
+          echo "notes updated on $keep"
+          echo "$ids" | sed '$d' | while read -r id; do
+            gh api -X DELETE "/repos/${{ github.repository }}/releases/$id" >/dev/null
+            echo "removed duplicate draft $id"
+          done
