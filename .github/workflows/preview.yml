@@ -85,6 +85,26 @@ jobs:
             --bundles ${{ matrix.bundles }} \
             --config '{"bundle":{"resources":["resources/worker"],"createUpdaterArtifacts":false}}'
 
+      # The binary is linked against the build machine's Homebrew libsodium. Nothing on a
+      # user's Mac has that path, so the dylib travels inside the app.
+      - name: Bundle libsodium
+        if: startsWith(matrix.platform, 'macos')
+        shell: bash
+        run: |
+          APP="src-tauri/target/${{ matrix.target }}/release/bundle/macos/openlab.app"
+          BIN="$APP/Contents/MacOS/openlab"
+          LIB="$(ls "$(brew --prefix libsodium)"/lib/libsodium.*.dylib | head -1)"
+          NAME="$(basename "$LIB")"
+          OLD="$(otool -L "$BIN" | awk '/libsodium.*dylib/ {print $1; exit}')"
+          mkdir -p "$APP/Contents/Frameworks"
+          cp "$LIB" "$APP/Contents/Frameworks/$NAME"
+          install_name_tool -id "@rpath/$NAME" "$APP/Contents/Frameworks/$NAME"
+          install_name_tool -change "$OLD" "@rpath/$NAME" "$BIN"
+          if ! otool -l "$BIN" | grep -q "@executable_path/../Frameworks"; then
+            install_name_tool -add_rpath "@executable_path/../Frameworks" "$BIN"
+          fi
+          codesign --force --deep --sign - "$APP"
+
       - uses: actions/upload-artifact@v4
         with:
           name: openlab-preview-${{ matrix.target }}
