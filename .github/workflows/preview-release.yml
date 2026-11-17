@@ -58,7 +58,13 @@ jobs:
           TXT
 
             rm -f "$dmg"
-            hdiutil create -volname openlab -srcfolder "$stage" -ov -format UDZO "$dmg" >/dev/null
+            # A unique volume name: a second create with the same name can find the
+            # previous temporary volume still busy on the runner.
+            vol="openlab-$(basename "$dmg" .dmg | tr '_' '-')"
+            if ! hdiutil create -volname "$vol" -srcfolder "$stage" -ov -format UDZO "$dmg" >/dev/null; then
+              sleep 3
+              hdiutil create -volname "$vol-retry" -srcfolder "$stage" -ov -format UDZO "$dmg" >/dev/null
+            fi
             rm -rf "$stage"
             echo "rebuilt $dmg"
           done
