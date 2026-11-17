@@ -46,7 +46,7 @@ jobs:
     runs-on: ${{ matrix.platform }}
     timeout-minutes: 90
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           ref: ${{ inputs.tag || github.ref }}
 
@@ -132,7 +132,7 @@ jobs:
           bun install --frozen-lockfile
           bun run build
 
-      - uses: tauri-apps/tauri-action@v0
+      - uses: tauri-apps/tauri-action@v1
         env:
           # macOS
           APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
