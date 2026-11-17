@@ -21,6 +21,9 @@ jobs:
     # macOS, because codesign and hdiutil are what fix the downloaded macOS apps.
     runs-on: macos-15
     steps:
+      # The release notes live in the repository, so the job needs a checkout to read them.
+      - uses: actions/checkout@v4
+
       - uses: actions/download-artifact@v4
         with:
           run-id: ${{ inputs.run_id }}
