@@ -24,6 +24,9 @@ concurrency:
 
 jobs:
   build:
+    # `v*` also catches preview tags such as v0.1.0-preview, which belong to the unsigned
+    # preview pipeline. Only a tag without a suffix is a stable release.
+    if: ${{ github.event_name == 'workflow_dispatch' || !contains(github.ref_name, '-') }}
     strategy:
       fail-fast: false
       matrix:
