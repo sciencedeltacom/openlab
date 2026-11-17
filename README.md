@@ -2,6 +2,10 @@
   <img src="./openlab.png" alt="OpenLab for open science" width="100%" />
 </p>
 
+<p align="center">
+  <a href="https://www.producthunt.com/products/openlab?embed=true&amp;utm_source=badge-featured&amp;utm_medium=badge&amp;utm_campaign=badge-openlab" target="_blank" rel="noopener noreferrer"><img alt="OpenLab - the research workbench | Product Hunt" width="250" height="54" src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=1320315&amp;theme=light&amp;t=1794920367801"></a>
+</p>
+
 # openlab
 
 **The research workbench.** An agent you can watch, a real workspace, and every result you can reproduce.
