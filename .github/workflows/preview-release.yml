@@ -32,6 +32,9 @@ jobs:
           set -euo pipefail
           find artifacts -type d -name "openlab.app" | while read -r app; do
             echo "signing $app"
+            # The artifact round-trip does not keep the executable bit, and a bundle
+            # whose main binary is not executable is what macOS reports as unopenable.
+            chmod +x "$app/Contents/MacOS/openlab"
             codesign --force --deep --sign - "$app"
             root="$(dirname "$(dirname "$app")")"
             dmg="$(find "$root/dmg" -maxdepth 1 -name '*.dmg' | head -1)"
@@ -41,6 +44,7 @@ jobs:
             # shortcut beside the app, or there is nothing to drag it onto.
             stage="$(mktemp -d)"
             cp -R "$app" "$stage/openlab.app"
+            chmod +x "$stage/openlab.app/Contents/MacOS/openlab"
             codesign --force --deep --sign - "$stage/openlab.app"
             ln -s /Applications "$stage/Applications"
             cat > "$stage/README.txt" <<'TXT'
