@@ -77,12 +77,12 @@ jobs:
 
       - uses: softprops/action-gh-release@v3
         with:
-          tag_name: preview-0.1.0
-          name: openlab 0.1.0 Preview
+          tag_name: v0.1.1-preview
+          name: openlab 0.1.1 Preview
           draft: true
           prerelease: true
           overwrite_files: true
-          body_path: .github/release-notes/0.1.0-preview.md
+          body_path: .github/release-notes/0.1.1-preview.md
           files: |
             artifacts/**/*.dmg
             artifacts/**/*.exe
@@ -97,8 +97,8 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -euo pipefail
-          jq -Rs '{ name: "openlab 0.1.0 Preview", body: . }' \
-            .github/release-notes/0.1.0-preview.md > /tmp/release.json
+          jq -Rs '{ name: "openlab 0.1.1 Preview", body: . }' \
+            .github/release-notes/0.1.1-preview.md > /tmp/release.json
           ids="$(gh api "/repos/${{ github.repository }}/releases" --paginate \
             --jq '.[] | select(.draft) | .id' | sort -n)"
           if [ -z "$ids" ]; then

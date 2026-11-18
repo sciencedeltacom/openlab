@@ -1,6 +1,6 @@
 {
   "name": "openlab-cli",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "private": true,
   "description": "openlab \u2014 the research workbench, at the terminal",
   "license": "MIT",

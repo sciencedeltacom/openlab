@@ -1,7 +1,7 @@
 {
   "name": "openlab",
   "private": true,
-  "version": "0.1.0",
+  "version": "0.1.1",
   "type": "module",
   "description": "openlab \u2014 the research workbench by ScienceDelta",
   "license": "MIT",
