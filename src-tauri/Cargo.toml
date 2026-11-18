@@ -1,6 +1,6 @@
 [package]
 name = "openlab"
-version = "0.1.0"
+version = "0.1.1"
 description = "openlab — the research workbench by ScienceDelta"
 authors = ["ScienceDelta"]
 edition = "2021"
@@ -35,7 +35,7 @@ futures-util = "0.3"
 regex = "1"
 walkdir = "2"
 glob = "0.3"
-zip = { version = "2", default-features = false, features = ["deflate"] }
+zip = { version = "9", default-features = false, features = ["deflate"] }
 rusqlite = { version = "0.40.2", features = ["bundled"] }
 sha2 = "0.10"
 lancedb = "0.26.2"

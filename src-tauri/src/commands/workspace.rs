@@ -273,8 +273,14 @@ fn list_zip_blocking(path: String, root: Option<String>) -> Result<Vec<ZipEntry>
                 file.display()
             ))
         })?;
+        // zip 9 decodes the name and can fail on a header that claims UTF-8 but is not. The
+        // raw bytes are still there, so the entry is listed lossily instead of hidden.
+        let name = match entry.name() {
+            Ok(name) => name.into_owned(),
+            Err(_) => String::from_utf8_lossy(entry.name_raw()).into_owned(),
+        };
         entries.push(ZipEntry {
-            name: entry.name().to_string(),
+            name,
             is_dir: entry.is_dir(),
             size: entry.size(),
             compressed: entry.compressed_size(),
