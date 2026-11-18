@@ -4,6 +4,18 @@
 
 The latest 0.1.x release receives security fixes. Older builds should be upgraded.
 
+## Advisories we accept
+
+Two open Dependabot advisories cannot be fixed from this repository yet. Neither is reachable
+in the app, and both are dismissed with this note.
+
+| Advisory | Package | Why it is accepted |
+| --- | --- | --- |
+| GHSA-wrw7-89jp-8q8g | `glib` 0.18.5 | Unsoundness in `VariantStrIter`, which openlab never calls. It arrives on Linux through `tao 0.37` into `gtk 0.18`; the fix needs gtk-rs 0.20, which tao and wry have not adopted. |
+| GHSA-rhfx-m35p-ff5j | `lru` 0.12.5 | A `Stacked Borrows` violation in `IterMut`, in a cache openlab never calls. It arrives through `lancedb` into `tantivy`; the fix needs a tantivy built on `lru 0.16`, which a later lancedb carries. |
+
+When either upstream moves, the upgrade lands with it.
+
 ## Reporting a vulnerability
 
 Please use GitHub's private vulnerability reporting: open the **Security** tab of this
