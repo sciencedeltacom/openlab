@@ -12,6 +12,8 @@
 
 openlab is the ScienceDelta desktop app for the parts of research that are real work but not the idea: pulling and cleaning data, reproducing a claim, sweeping a parameter, drafting the methods section, checking a reference.
 
+**Status: early preview.** Expect bugs, missing pieces and rough releases. Not production ready.
+
 ## What it is
 
 - **A session, not a chat box.** Each session is an experiment with a folder, a branch and a phase.
@@ -30,6 +32,17 @@ Installers for macOS, Windows and Linux are published on the [releases page](htt
 | Linux | x64 |
 
 The app checks the same releases page for updates. Builds are signed when a signing identity is configured.
+
+## Status: early preview
+
+openlab is 0.1.x. We publish it early so the idea improves faster, not because it is finished.
+
+- Expect bugs, and some features that do not work or do not exist yet. The PDF scan engine is not bundled.
+- Releases can break. Installers are unsigned or signed ad hoc, so macOS asks you to allow the first launch and Windows shows SmartScreen.
+- Keep your own copy of data, code and results. Until 1.0, treat every workspace as disposable.
+- Before 1.0 the version number promises no compatibility: schema, CLI flags and file formats may change without a migration path.
+
+If something breaks, open an [issue](https://github.com/sciencedeltacom/openlab/issues) with the version, the platform and the steps.
 
 ## Getting started
 
