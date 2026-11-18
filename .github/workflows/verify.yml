@@ -30,7 +30,11 @@ jobs:
       - name: Dependency audit
         # High and critical advisories stop the build. Moderate advisories in the CLI
         # toolchain are tracked by Dependabot instead of blocking every change.
-        run: bun audit --audit-level=high
+        #
+        # picomatch is the one exception: the newest release (4.0.7) is the flagged one, so
+        # there is nothing to upgrade to yet. It is a build-time globber under vite and
+        # @oclif/core and never ships in the app. Drop the ignore when 4.0.8 is published.
+        run: bun audit --audit-level=high --ignore=GHSA-fc5q-39xc-vjpf
       - name: Typecheck and verifiers
         run: bun run verify:web
       - name: Containment tests
